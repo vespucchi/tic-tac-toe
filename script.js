@@ -24,10 +24,9 @@ function boardController() {
             return;
         } else {
             console.log('avail');
-            boardGrid[selectedRow][selectedCol].updateCellValue(player);
+            return boardGrid[selectedRow][selectedCol].updateCellValue(player);
         }
     };
-
 
     const getBoard = () => boardGrid;
 
@@ -46,10 +45,39 @@ function boardCell() {
 };
 
 
-// function gameController() {
-    
-// };
+function gameController() {
+    // need array of objects of players
+    const players = [
+        {
+            name: 'playerOne',
+            value: 1,
+        },
+        {
+            name: 'playerTwo',
+            value: 2,
+        }
+    ]
+
+    // player turns
+    let playerTurn = players[0];
+
+    // get board
+    const gameboard = boardController();
+
+    // play round
+    const playRound = (selectedRow, selectedCol) => {
+        console.log(`${playerTurn['name']} is playing the round`);
+
+        if(!!gameboard.playerSelectCell(selectedRow, selectedCol, playerTurn['value']) === false) return;
+
+        playerTurn === players[0] ? playerTurn = players[1] : playerTurn = players[0];
+    }
+
+    const getBoard = gameboard.getBoard;
+
+    return { playRound, getBoard };
+};
 
 
-const grid = boardController();
+const game = gameController();
 
