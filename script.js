@@ -41,6 +41,8 @@ function boardCell() {
 
 
 function gameController() {
+    console.log('Starting the game');
+
     // need array of objects of players
     const players = [
         {
@@ -55,6 +57,7 @@ function gameController() {
 
     // player turns
     let playerTurn = players[0];
+    const getPlayerTurn = () => playerTurn['name'];
 
     // get board
     const gameboard = boardController();
@@ -62,6 +65,7 @@ function gameController() {
 
     // rounds counter
     let counter = 0;
+    const getCounter = () => counter;
 
     // play round
     const playRound = (selectedCell) => {
@@ -88,18 +92,65 @@ function gameController() {
             return acc + item;
         }, 0));
 
-        if(checkForOutcome.includes(3 || -3) || counter === 9) {
+        counter++;
+
+        if(checkForOutcome.includes(3) || checkForOutcome.includes(-3) || counter === 9) {
             return true;
         }
 
-        counter++;
-
+        playerTurn === players[0] ? playerTurn = players[1] : playerTurn = players[0];
         return false;
     };
 
-    return { playRound, getBoard };
+    return { playRound, getBoard, getCounter, getPlayerTurn };
 };
 
 
-const game = gameController();
+function screenController() {
+    const game = gameController();
+    const playerTurnDiv = document.querySelector('.turn');
+    const grid = document.querySelector('.grid');    
+    
+    function updateBoard() {
+        // with each click, remove grid content
+        grid.textContent = '';
 
+        // and append grid with updated board
+        game.getBoard.forEach((cell, index) => {
+
+            const btn = document.createElement('button');
+            btn.dataset.index = index;
+            btn.classList.add('cell');
+            if(cell.getCellValue() == 1) {
+                btn.textContent = "O";
+            } else if (cell.getCellValue() == -1) {
+                btn.textContent = "X";
+            }
+            
+            grid.appendChild(btn);
+        })
+
+        // save new buttons aka cells
+        const cells = document.querySelectorAll('.cell');
+
+        cells.forEach(cell => cell.addEventListener('click', (e) => {
+            const cellIndex = e.target.dataset.index;
+            console.log(cellIndex);
+            if(game.playRound(cellIndex) === true) {
+                updateBoard();
+                return game.getCounter() === 9 ? showOutcome("tie") : showOutcome(game.getPlayerTurn());
+            } else {
+                updateBoard();
+            };
+        }))
+    }
+
+    function showOutcome(state) {
+        
+    }
+
+    // initialize board
+    updateBoard();
+}
+
+screenController();
