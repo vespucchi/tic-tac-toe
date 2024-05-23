@@ -1,29 +1,17 @@
 (function domController() {
-    // initialize a new game
-    let game = gameController();
+    // initialize the game
+    const game = gameController();
     const playerOneScore = document.querySelector('#score1-score');
     const playerTwoScore = document.querySelector('#score2-score');
     const tieScore = document.querySelector('#score0-score');
+    let playerTurn = game.getPlayerTurn();
+    let outcome = 0;
 
-    // create overlay
-    const overlay = document.querySelector('.overlay');
-    overlay.textContent = '';
-
-    createElement('.overlay', 'div', undefined, 'winner', 'hide');
-    createElement('.winner', 'p', 'Winner is', 'win-title', 'hide');
-    createElement('.winner', 'p', 'X', 'playerOne', 'hide');
-    createElement('.winner', 'p', 'O', 'playerTwo', 'hide');
-    createElement('.overlay', 'div', undefined, 'tie', 'hide');
-    createElement('.tie', 'p', 'Tie!', 'tie-title', 'hide');
-    createElement('.overlay', 'button', 'Restart', 'restart', 'hide');
-
-
-    // save board grid which is needed for appending buttons
-    const boardGrid = document.querySelector('.boardGrid');
-    boardGrid.textContent = '';
+    game.initializeBoardGrid();
 
     // create cells (buttons) and append them to boardGrid
     for(let i = 0; i < 9; i++) {
+        // create new buttons
         const cellDiv = createElement('.boardGrid', 'div', undefined, 'cellDiv');
         const cellBtn = document.createElement('button');
         cellBtn.classList.add('cell');
@@ -32,82 +20,106 @@
         cellDiv.appendChild(cellBtn);
     }
 
-    // save these buttons (cells)
-    const cells = document.querySelectorAll('.cell');
+    // create cells & save these buttons (cells)
+    let cells = document.querySelectorAll('.cell');
 
     // add event listeners for these buttons
     cells.forEach(cell => {
         cell.addEventListener('click', () => {
-            const playerTurn = game.getPlayerTurn();
+            if(outcome === 0) {
+                playerTurn = game.getPlayerTurn()
 
-            const roundSuccess = game.playRound(cell.dataset.index);
-            if(roundSuccess) {
-                playerTurn.value === 1 ? cell.textContent = 'X' : cell.textContent = 'O';
-                cell.animate([
-                    // keyframes
-                    { transform: 'scale(0.1)' },  
-                    { transform: 'scale(1)'}
-                  ], { 
-                    // timing options
-                    duration: 50,
-                    
-                  });
-                const outcome = game.checkOutcome();
+                const roundSuccess = game.playRound(cell.dataset.index);
 
-                if(typeof outcome === 'object') {
-                    outcome.forEach(value => {
-                        const scenarioCell = document.querySelector(`.cell[data-index="${value}"`);
+                if(roundSuccess) {
+                    playerTurn.value === 1 ? cell.textContent = 'X' : cell.textContent = 'O';
+                    cell.animate([
+                        // keyframes
+                        { transform: 'scale(0.1)' },  
+                        { transform: 'scale(1)'}
+                    ], { 
+                        // timing options
+                        duration: 50,
+                        
+                    });
 
-                        scenarioCell.animate([
-                            // keyframes
-                            { transform: 'scale(0.1)' },  
-                            { transform: 'scale(1)'},
-                            { transform: 'scale(0.1)'},
-                            { transform: 'scale(1)'},
-                            { transform: 'scale(0.1)'},
-                            { transform: 'scale(1)'},
-                            ], { 
-                            // timing options
-                            duration: 1000,
+                    outcome = game.checkOutcome();
+
+                    if(typeof outcome === 'object') {
+                        cells.forEach(cellColor => {
+                            cellColor.style.color = '#818181';
+                        })
+
+                        outcome.forEach(value => {
+                            const scenarioCell = document.querySelector(`.cell[data-index="${value}"`);
+                            scenarioCell.style.color = '#FFFFFF';
+
+                            scenarioCell.animate([
+                                // keyframes
+                                { transform: 'scale(0.1)' },  
+                                { transform: 'scale(1)'},
+                                { transform: 'scale(0.1)'},
+                                { transform: 'scale(1)'},
+                                { transform: 'scale(0.1)'},
+                                { transform: 'scale(1)'},
+                                ], { 
+                                // timing options
+                                duration: 1000,
+                            });
+                        })
+
+                        playerOneScore.textContent = game.getPlayerScore(0);
+                        playerTwoScore.textContent = game.getPlayerScore(1);
+                        
+                        return;
+
+                    } else if (outcome == 1) {
+                        const gridBorders = document.querySelectorAll('.cellDiv');
+                        cells.forEach(cellColor => {
+                            cellColor.style.color = '#818181';
                         });
-                    })
 
-                    switch (playerTurn.value) {
-                        case 1:
-                            playerOneScore.textContent = playerTurn.score;
-                            break;
-                        case -1:
-                            playerTwoScore.textContent = playerTurn.score;
-                            break;
+                        gridBorders.forEach(border => {
+                            border.animate([
+                                // keyframes
+                                { opacity: '0.1' },  
+                                { opacity: '1'},
+                                { opacity: '0.1' },  
+                                { opacity: '1'},
+                                { opacity: '0.1' },  
+                                { opacity: '1'},
+                                ], { 
+                                // timing options
+                                duration: 1000,
+                            });
+                        });
+
+                        tieScore.textContent++;
+                        return;
                     }
-                } else if (outcome === 1) {
-                    const gridBorders = document.querySelectorAll('.cellDiv');
+                }
+            } 
+            else {
+                // reset player turn
+                game.setPlayerTurn(0);
 
-                    gridBorders.forEach(border => {
-                        border.animate([
-                            // keyframes
-                            { opacity: '0.1' },  
-                            { opacity: '1'},
-                            { opacity: '0.1' },  
-                            { opacity: '1'},
-                            { opacity: '0.1' },  
-                            { opacity: '1'},
-                            ], { 
-                            // timing options
-                            duration: 1000,
-                        });
-                    })
+                // reset round counter
+                game.resetRoundCounter();
 
-                    tieScore.textContent++;
+                // reset outcome
+                outcome = 0;
+
+                // reset grid values
+                game.initializeBoardGrid();
+
+                // reset cells value
+                cells.forEach(cell => {
+                    cell.textContent = '';
+                    cell.style.color = '#FFFFFF';
+                });
             }
-        }}
+        }
     )})
-
-    // function for toggling outcome elements
-    function toggleElement(elementClass) {
-        const element = document.querySelector(elementClass);
-        element.classList.toggle('hide');
-    };
 
     function createElement(parentElement, childElement, text = '', ...elementClass) {
         const parent = document.querySelector(parentElement);
@@ -122,13 +134,15 @@
 
         return child;
     }
-
 })();
 
 
 function gameController() {
     // get boardController methods
     const board = boardController();
+
+    // initialize board grid objects
+    const initializeBoardGrid = () => board.createBoardGrid();
 
     // define 2 players as objects and save in array
     const player = [
@@ -143,13 +157,16 @@ function gameController() {
             score: 0,
         }
     ]
+    const getPlayerScore = (index) => player[index].score;
 
     // initialize playerTurn to the first player
     let playerTurn = player[0];
     const getPlayerTurn = () => playerTurn;
+    const setPlayerTurn = (index) => playerTurn = player[index];
 
     // variable for counting rounds
     let roundCounter = 0;
+    const resetRoundCounter = () => roundCounter = 0;
 
     // method for playing rounds, it takes cell number as an arg
     const playRound = (cellIndex) => {
@@ -163,7 +180,7 @@ function gameController() {
             return false;
         }
 
-        // if move was successful, swap player turn
+        // swap turns
         playerTurn === player[0] ? playerTurn = player[1] : playerTurn = player[0];
 
         // increase round counter
@@ -219,17 +236,22 @@ function gameController() {
     }
     
 
-    return { playRound, checkOutcome, getPlayerTurn };
+    return { playRound, checkOutcome, getPlayerTurn, setPlayerTurn, initializeBoardGrid, resetRoundCounter, getPlayerScore };
 }
 
 
 function boardController() {
-    // board grid is an array of cells that are type of object
-    const boardGrid = [];
-
     // intialize the board grid
-    for(let i = 0; i < 9; i++) {
-        boardGrid.push(cellController());
+    let boardGrid;
+
+    const createBoardGrid = () => {
+        // reset board grid
+        boardGrid = [];
+
+        // board grid is an array of cells that are type of object
+        for(let i = 0; i < 9; i++) {
+            boardGrid.push(cellController());
+        }
     }
 
     // method for requesting board grid state
@@ -245,7 +267,7 @@ function boardController() {
     };
 
 
-    return { selectCell, getBoardGrid };
+    return { selectCell, getBoardGrid, createBoardGrid };
 }
 
 
