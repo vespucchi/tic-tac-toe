@@ -156,7 +156,8 @@ function gameController() {
         // outcome is 1D array: like this (8) [0, 0, 1, 1, 0, 0, 0, 1]
         
         // now go thru this 1D array and find if there's tie or a winner
-        // tie will check if all values are !== 0, it's impossible to be 0 if all 3 cells are occupied
+        // winner will check if array contains 3 (player 1 winner) or -3 (player 2 winner)
+        // tie will check for round counter value
         if(sumOfScenarioCells.includes(3) || sumOfScenarioCells.includes(-3)) {
             // 1 === winner
             return 1;
