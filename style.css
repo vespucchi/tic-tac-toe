@@ -45,6 +45,8 @@ button {
 }
 
 button.cell {
+    height: 100%;
+    width: 100%;
     font-size: 3rem;
     background-color: transparent;
     border: none;
@@ -54,17 +56,17 @@ button.cell {
 }
 
 /* vertical middle border */
-button.cell:nth-child(2),
-button.cell:nth-child(5),
-button.cell:nth-child(8) {
+div.cellDiv:nth-child(2),
+div.cellDiv:nth-child(5),
+div.cellDiv:nth-child(8) {
     border-left: solid 3px white;
     border-right: solid 3px white;
 }
 
 /* horizontal middle border */
-button.cell:nth-child(4),
-button.cell:nth-child(5),
-button.cell:nth-child(6) {
+div.cellDiv:nth-child(4),
+div.cellDiv:nth-child(5),
+div.cellDiv:nth-child(6) {
     border-top: solid 3px white;
     border-bottom: solid 3px white;
 }

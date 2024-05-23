@@ -21,8 +21,12 @@
 
     // create cells (buttons) and append them to boardGrid
     for(let i = 0; i < 9; i++) {
-        const cellBtn = createElement('.boardGrid', 'button', undefined, 'cell');
+        const cellDiv = createElement('.boardGrid', 'div', undefined, 'cellDiv');
+        const cellBtn = document.createElement('button');
+        cellBtn.classList.add('cell');
         cellBtn.dataset.index = i;
+
+        cellDiv.appendChild(cellBtn);
     }
 
     // save these buttons (cells)
@@ -36,21 +40,35 @@
             const roundSuccess = game.playRound(cell.dataset.index);
             if(roundSuccess) {
                 playerTurn.value === 1 ? cell.textContent = 'X' : cell.textContent = 'O';
+                cell.animate([
+                    // keyframes
+                    { transform: 'scale(0.1)' },  
+                    { transform: 'scale(1)'}
+                  ], { 
+                    // timing options
+                    duration: 50,
+                    
+                  });
                 const outcome = game.checkOutcome();
 
-                if(outcome === 1) {
-                    toggleElement('.overlay');
-                    toggleElement('.winner');
-                    toggleElement('.win-title');
-                    toggleElement(`.${playerTurn.name}`);
-                    toggleElement('.restart');
-                } else if(outcome === 2) {
-                    toggleElement('.overlay');
-                    toggleElement('.tie');
-                    toggleElement('.tie-title');
-                    toggleElement('.restart');
-                }
+                if(typeof outcome === 'object') {
+                    outcome.forEach(value => {
+                        const scenarioCell = document.querySelector(`.cell[data-index="${value}"`);
 
+                        scenarioCell.animate([
+                            // keyframes
+                            { transform: 'scale(0.1)' },  
+                            { transform: 'scale(1)'},
+                            { transform: 'scale(0.1)'},
+                            { transform: 'scale(1)'},
+                            { transform: 'scale(0.1)'},
+                            { transform: 'scale(1)'},
+                            ], { 
+                            // timing options
+                            duration: 1000,
+                        });
+                    })
+                }
             }
         })
     })
@@ -158,12 +176,14 @@ function gameController() {
         // now go thru this 1D array and find if there's tie or a winner
         // winner will check if array contains 3 (player 1 winner) or -3 (player 2 winner)
         // tie will check for round counter value
-        if(sumOfScenarioCells.includes(3) || sumOfScenarioCells.includes(-3)) {
-            // 1 === winner
-            return 1;
+        // winner will return a scenario of cell values that won the game (for animation purposes)
+        if(sumOfScenarioCells.includes(3)) {
+            return winScenarios[sumOfScenarioCells.indexOf(3)];
+        } else if(sumOfScenarioCells.includes(-3)) {
+            return winScenarios[sumOfScenarioCells.indexOf(-3)];
         } else if(roundCounter === 9) {
-            // 2 === tie
-            return 2;
+            // 1 === tie
+            return 1;
         } else {
             // 0 === no outcome
             return 0;
