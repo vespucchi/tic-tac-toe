@@ -104,8 +104,8 @@ function gameController() {
     let playerTurn = player[0];
     const getPlayerTurn = () => playerTurn;
 
-    // variable for outcome
-    let outcome = 0;
+    // variable for counting rounds
+    let roundCounter = 0;
 
     // method for playing rounds, it takes cell number as an arg
     const playRound = (cellIndex) => {
@@ -119,8 +119,11 @@ function gameController() {
             return false;
         }
 
-        // if no condition is met, there's no outcome yet, swap playerTurn
+        // if move was successful, swap player turn
         playerTurn === player[0] ? playerTurn = player[1] : playerTurn = player[0];
+
+        // increase round counter
+        roundCounter++;
 
         // return true = successful round
         return true;
@@ -157,7 +160,7 @@ function gameController() {
         if(sumOfScenarioCells.includes(3) || sumOfScenarioCells.includes(-3)) {
             // 1 === winner
             return 1;
-        } else if(!sumOfScenarioCells.includes(0)) {
+        } else if(roundCounter === 9) {
             // 2 === tie
             return 2;
         } else {
