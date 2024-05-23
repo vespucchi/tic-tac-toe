@@ -27,22 +27,22 @@ body {
     align-items: center;
 }
 
-.grid {
+.boardGrid {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
 }
 
-button.cell {
+button {
     cursor: pointer;
+}
+
+button.cell {
     height: 100px;
     width: 100px;
     font-size: 3rem;
 }
 
-button.restart {
-    cursor: pointer;
-}
 
 .overlay {
     position: fixed;
