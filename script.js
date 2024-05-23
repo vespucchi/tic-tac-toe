@@ -1,6 +1,9 @@
 (function domController() {
     // initialize a new game
-    const game = gameController();
+    let game = gameController();
+    const playerOneScore = document.querySelector('#score1-score');
+    const playerTwoScore = document.querySelector('#score2-score');
+    const tieScore = document.querySelector('#score0-score');
 
     // create overlay
     const overlay = document.querySelector('.overlay');
@@ -68,10 +71,37 @@
                             duration: 1000,
                         });
                     })
-                }
+
+                    switch (playerTurn.value) {
+                        case 1:
+                            playerOneScore.textContent = playerTurn.score;
+                            break;
+                        case -1:
+                            playerTwoScore.textContent = playerTurn.score;
+                            break;
+                    }
+                } else if (outcome === 1) {
+                    const gridBorders = document.querySelectorAll('.cellDiv');
+
+                    gridBorders.forEach(border => {
+                        border.animate([
+                            // keyframes
+                            { opacity: '0.1' },  
+                            { opacity: '1'},
+                            { opacity: '0.1' },  
+                            { opacity: '1'},
+                            { opacity: '0.1' },  
+                            { opacity: '1'},
+                            ], { 
+                            // timing options
+                            duration: 1000,
+                        });
+                    })
+
+                    tieScore.textContent++;
             }
-        })
-    })
+        }}
+    )})
 
     // function for toggling outcome elements
     function toggleElement(elementClass) {
@@ -93,12 +123,6 @@
         return child;
     }
 
-    // restart button element & event listener
-    const restartBtn = document.querySelector('.restart');
-    return restartBtn.addEventListener('click', () => {
-        overlay.classList.toggle('hide');
-        return domController();
-    })
 })();
 
 
@@ -111,10 +135,12 @@ function gameController() {
         {
             name: 'playerOne',
             value: 1,
+            score: 0,
         },
         {
             name: 'playerTwo',
             value: -1,
+            score: 0,
         }
     ]
 
@@ -178,8 +204,10 @@ function gameController() {
         // tie will check for round counter value
         // winner will return a scenario of cell values that won the game (for animation purposes)
         if(sumOfScenarioCells.includes(3)) {
+            player[0].score++;
             return winScenarios[sumOfScenarioCells.indexOf(3)];
         } else if(sumOfScenarioCells.includes(-3)) {
+            player[1].score++;
             return winScenarios[sumOfScenarioCells.indexOf(-3)];
         } else if(roundCounter === 9) {
             // 1 === tie
