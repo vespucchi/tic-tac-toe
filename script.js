@@ -45,57 +45,20 @@
 
                     outcome = game.checkOutcome();
 
-                    if(typeof outcome === 'object') {
-                        cells.forEach(cellColor => {
-                            cellColor.style.color = '#818181';
-                        })
+                    if(outcome === 0) {
+                        if(game.getPlayMode() === 1) {
+                            const randomizedCell = game.randomizePlay();
+                            const randCell = document.querySelector(`button[data-index="${randomizedCell}"]`);
+    
+                            setTimeout(() => randCell.textContent = 'O', 100);
+                            outcome = game.checkOutcome();
 
-                        outcome.forEach(value => {
-                            const scenarioCell = document.querySelector(`.cell[data-index="${value}"`);
-                            scenarioCell.style.color = '#FFFFFF';
-
-                            scenarioCell.animate([
-                                // keyframes
-                                { transform: 'scale(0.1)' },  
-                                { transform: 'scale(1)'},
-                                { transform: 'scale(0.1)'},
-                                { transform: 'scale(1)'},
-                                { transform: 'scale(0.1)'},
-                                { transform: 'scale(1)'},
-                                ], { 
-                                // timing options
-                                duration: 1000,
-                            });
-                        })
-
-                        playerOneScore.textContent = game.getPlayerScore(0);
-                        playerTwoScore.textContent = game.getPlayerScore(1);
-                        
-                        return;
-
-                    } else if (outcome == 1) {
-                        const gridBorders = document.querySelectorAll('.cellDiv');
-                        cells.forEach(cellColor => {
-                            cellColor.style.color = '#818181';
-                        });
-
-                        gridBorders.forEach(border => {
-                            border.animate([
-                                // keyframes
-                                { opacity: '0.1' },  
-                                { opacity: '1'},
-                                { opacity: '0.1' },  
-                                { opacity: '1'},
-                                { opacity: '0.1' },  
-                                { opacity: '1'},
-                                ], { 
-                                // timing options
-                                duration: 1000,
-                            });
-                        });
-
-                        tieScore.textContent++;
-                        return;
+                            if(outcome !== 0) {
+                                outcomeDisplay(outcome);
+                            }
+                        }
+                    } else {
+                        outcomeDisplay(outcome);
                     }
                 }
             } 
@@ -120,6 +83,73 @@
             }
         }
     )})
+
+    function outcomeDisplay(outcome) {
+        if(typeof outcome === 'object') {
+            cells.forEach(cellColor => {
+                cellColor.style.color = '#818181';
+            })
+
+            outcome.forEach(value => {
+                const scenarioCell = document.querySelector(`.cell[data-index="${value}"`);
+                scenarioCell.style.color = '#FFFFFF';
+
+                scenarioCell.animate([
+                    // keyframes
+                    { transform: 'scale(0.1)' },  
+                    { transform: 'scale(1)'},
+                    { transform: 'scale(0.1)'},
+                    { transform: 'scale(1)'},
+                    { transform: 'scale(0.1)'},
+                    { transform: 'scale(1)'},
+                    ], { 
+                    // timing options
+                    duration: 1000,
+                });
+            })
+
+            if(game.getPlayMode() === 1) {
+                playerOneScore.textContent = game.getPlayerScore(0, 'win1');
+                playerTwoScore.textContent = game.getPlayerScore(2, 'win');
+            }
+            else {
+                playerOneScore.textContent = game.getPlayerScore(0, 'win2');
+                playerTwoScore.textContent = game.getPlayerScore(1, 'win');
+            }
+            
+            return;
+
+        } else if (outcome == 1) {
+            const gridBorders = document.querySelectorAll('.cellDiv');
+            cells.forEach(cellColor => {
+                cellColor.style.color = '#818181';
+            });
+
+            gridBorders.forEach(border => {
+                border.animate([
+                    // keyframes
+                    { opacity: '0.1' },  
+                    { opacity: '1'},
+                    { opacity: '0.1' },  
+                    { opacity: '1'},
+                    { opacity: '0.1' },  
+                    { opacity: '1'},
+                    ], { 
+                    // timing options
+                    duration: 1000,
+                });
+            });
+
+            if(game.getPlayMode() === 1) {
+                tieScore.textContent = game.getPlayerScore(2, 'tie');
+            }
+            else {
+                tieScore.textContent = game.getPlayerScore(1, 'tie');
+            }
+
+            return;
+        }
+    }
 
     function createElement(parentElement, childElement, text = '', ...elementClass) {
         const parent = document.querySelector(parentElement);
@@ -149,17 +179,30 @@ function gameController() {
         {
             name: 'playerOne',
             value: 1,
-            score: 0,
+            win1: 0,
+            win2: 0,
         },
         {
             name: 'playerTwo',
             value: -1,
-            score: 0,
-        }
+            win: 0,
+            tie: 0,
+        },
+        {
+            name: 'playerAi',
+            value: -1,
+            win: 0,
+            tie: 0,
+        },
     ]
-    const getPlayerScore = (index) => player[index].score;
+    const getPlayerScore = (index, score) => player[index][score];
 
-    // initialize playerTurn to the first player
+    // play mode initialization
+    let playMode = 1;
+    const getPlayMode = () => playMode;
+    const setPlayMode = (index) => playMode = index;
+
+    // player turn initialization
     let playerTurn = player[0];
     const getPlayerTurn = () => playerTurn;
     const setPlayerTurn = (index) => playerTurn = player[index];
@@ -168,10 +211,31 @@ function gameController() {
     let roundCounter = 0;
     const resetRoundCounter = () => roundCounter = 0;
 
+    const randomizePlay = () => {
+        const freeCells = board.getBoardGrid()
+        console.log(freeCells);
+        while(true) {
+            var randomizedCell = Math.floor(Math.random() * 10);
+            if(freeCells[randomizedCell] === 0) break;
+        }
+
+        board.selectCell(randomizedCell, -1);
+
+        playerTurn = player[0];
+        roundCounter++;
+
+        return randomizedCell;
+    }
+
+
     // method for playing rounds, it takes cell number as an arg
     const playRound = (cellIndex) => {
         // call boardController to update cell value if condition is met, returns bool
-        const moveSuccess = board.selectCell(cellIndex, playerTurn.value);
+        if(getPlayMode() === 1 && playerTurn === player[2]) {
+            board.selectCell(cellIndex, playerTurn.value);
+        } else {
+            var moveSuccess = board.selectCell(cellIndex, playerTurn.value);
+        }
         
         // check if move was successful
         if(!moveSuccess) {
@@ -207,7 +271,7 @@ function gameController() {
         const sumOfScenarioCells = winScenarios.map(scenario => {
             // inner map but this time for nested array values
             return scenario.map(cellIndex => {
-                return cellIndex = board.getBoardGrid()[cellIndex].getCellValue();
+                return cellIndex = board.getBoardGrid()[cellIndex];
                 })
             // now reduce these inner mapped values and use outer map to save the values
                 .reduce((acc, curr) => {
@@ -221,13 +285,26 @@ function gameController() {
         // tie will check for round counter value
         // winner will return a scenario of cell values that won the game (for animation purposes)
         if(sumOfScenarioCells.includes(3)) {
-            player[0].score++;
+            if(getPlayMode() === 1) {
+                player[0]['win1']++;
+            } else {
+                player[0]['win2']++;
+            }
             return winScenarios[sumOfScenarioCells.indexOf(3)];
         } else if(sumOfScenarioCells.includes(-3)) {
-            player[1].score++;
+            if(getPlayMode() === 1) {
+                player[2]['win']++;
+            } else {
+                player[1]['win']++;
+            }
             return winScenarios[sumOfScenarioCells.indexOf(-3)];
         } else if(roundCounter === 9) {
             // 1 === tie
+            if(getPlayMode() === 1) {
+                player[2]['tie']++;
+            } else {
+                player[1]['tie']++;
+            }
             return 1;
         } else {
             // 0 === no outcome
@@ -236,13 +313,14 @@ function gameController() {
     }
     
 
-    return { playRound, checkOutcome, getPlayerTurn, setPlayerTurn, initializeBoardGrid, resetRoundCounter, getPlayerScore };
+    return { playRound, checkOutcome, getPlayerTurn, setPlayerTurn, initializeBoardGrid, resetRoundCounter, getPlayerScore,
+        getPlayMode, setPlayMode, randomizePlay };
 }
 
 
 function boardController() {
     // intialize the board grid
-    let boardGrid;
+    let boardGrid = [];
 
     const createBoardGrid = () => {
         // reset board grid
@@ -255,7 +333,7 @@ function boardController() {
     }
 
     // method for requesting board grid state
-    const getBoardGrid = () => boardGrid;
+    const getBoardGrid = () => boardGrid.map(cell => cell.getCellValue());
 
     // method for updating cell if it's not already occupied
     const selectCell = (cellIndex, playerValue) => {
