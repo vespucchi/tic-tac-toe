@@ -9,6 +9,8 @@ body {
     background-color: black;
     color: white;
 
+    font-family: sans-serif;
+
     --oneplayer-grey: url('icons/oneplayer-grey.svg');
     --oneplayer: url('icons/oneplayer.svg');
     --twoplayer-grey: url('icons/twoplayer-grey.svg');
@@ -35,9 +37,31 @@ body {
     /* align-items: center; */
 }
 
+@media only screen and (max-width: 600px) {
+    .boardGrid {
+        height: 40vh;
+        width: 90vw;
+    }
+
+    button.cell {
+        font-size: 5rem;
+    }
+
+  }
+
+@media only screen and (min-width: 600px) {
+    .boardGrid {
+        height: 600px;
+        width: 600px;
+    }
+
+    button.cell {
+        font-size: 10rem;
+    }
+}
+
+
 .boardGrid {
-    height: 600px;
-    width: 600px;
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     grid-template-rows: 1fr 1fr 1fr;
@@ -52,11 +76,9 @@ button {
 button.cell {
     height: 100%;
     width: 100%;
-    font-size: 3rem;
     background-color: transparent;
     border: none;
     color: white;
-    font-size: 10rem;
     font-weight: bold;
 }
 

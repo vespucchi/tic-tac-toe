@@ -36,7 +36,7 @@
             playerTwoScore.textContent = game.getPlayerScore(2, 'win');
             tieScore.textContent = game.getPlayerScore(2, 'tie');
             playerOneTitle.textContent = 'PLAYER (x)';
-            playerTwoTitle.textContent = 'COMPUTER (o)';
+            playerTwoTitle.textContent = 'COMP (o)';
 
             playerIcon.classList.remove('oneplayer-icon', 'twoplayer-icon');
             playerIcon.classList.add('oneplayer-icon');
@@ -261,7 +261,7 @@ function gameController() {
 
     const randomizePlay = () => {
         const freeCells = board.getBoardGrid()
-        console.log(freeCells);
+
         while(true) {
             var randomizedCell = Math.floor(Math.random() * 10);
             if(freeCells[randomizedCell] === 0) break;
