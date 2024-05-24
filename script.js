@@ -3,7 +3,11 @@
     const game = gameController();
     const playerOneScore = document.querySelector('#score1-score');
     const playerTwoScore = document.querySelector('#score2-score');
+    const playerOneTitle = document.querySelector('#score1-title');
+    const playerTwoTitle = document.querySelector('#score2-title');
     const tieScore = document.querySelector('#score0-score');
+    const playModeSelect = document.querySelector('.player-select');
+    const playerIcon = document.querySelector('#player-icon');
     let playerTurn = game.getPlayerTurn();
     let outcome = 0;
 
@@ -22,6 +26,50 @@
 
     // create cells & save these buttons (cells)
     let cells = document.querySelectorAll('.cell');
+
+    // add event listener for play mode select
+    playModeSelect.addEventListener('click', () => {
+        game.getPlayMode() === 1 ? game.setPlayMode(2) : game.setPlayMode(1);
+
+        if(game.getPlayMode() === 1) {
+            playerOneScore.textContent = game.getPlayerScore(0, 'win1');
+            playerTwoScore.textContent = game.getPlayerScore(2, 'win');
+            tieScore.textContent = game.getPlayerScore(2, 'tie');
+            playerOneTitle.textContent = 'PLAYER (x)';
+            playerTwoTitle.textContent = 'COMPUTER (o)';
+
+            playerIcon.classList.remove('oneplayer-icon', 'twoplayer-icon');
+            playerIcon.classList.add('oneplayer-icon');
+        }
+        else {
+            playerOneScore.textContent = game.getPlayerScore(0, 'win2');
+            playerTwoScore.textContent = game.getPlayerScore(1, 'win');
+            tieScore.textContent = game.getPlayerScore(1, 'tie');
+            playerOneTitle.textContent = 'PLAYER1 (x)';
+            playerTwoTitle.textContent = 'PLAYER2 (o)';
+
+            playerIcon.classList.remove('oneplayer-icon', 'twoplayer-icon');
+            playerIcon.classList.add('twoplayer-icon');
+        }
+
+        // reset player turn
+        game.setPlayerTurn(0);
+
+        // reset round counter
+        game.resetRoundCounter();
+
+        // reset outcome
+        outcome = 0;
+
+        // reset grid values
+        game.initializeBoardGrid();
+
+        // reset cells value
+        cells.forEach(cell => {
+            cell.textContent = '';
+            cell.style.color = '#FFFFFF';
+        });
+    })
 
     // add event listeners for these buttons
     cells.forEach(cell => {
@@ -50,7 +98,7 @@
                             const randomizedCell = game.randomizePlay();
                             const randCell = document.querySelector(`button[data-index="${randomizedCell}"]`);
     
-                            setTimeout(() => randCell.textContent = 'O', 100);
+                            setTimeout(() => randCell.textContent = 'O', 200);
                             outcome = game.checkOutcome();
 
                             if(outcome !== 0) {
