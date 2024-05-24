@@ -17,6 +17,89 @@ body {
     --twoplayer: url('icons/twoplayer.svg');
 }
 
+@media only screen and (max-width: 399px) {
+    .boardGrid {
+        height: 300px;
+        width: 300px;
+    }
+
+    button.cell {
+        font-size: 5rem;
+    }
+
+    .scoreboard-title {
+        font-size: 1rem;
+        line-height: 0;
+    }
+    
+    .scoreboard-score {
+        font-size: 2rem;
+        line-height: 0;
+    }
+
+    .scoreboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        margin-top: 100px;
+    }
+}
+
+@media only screen and (min-width: 400px) {
+    .boardGrid {
+        height: 390px;
+        width: 390px;
+    }
+
+    button.cell {
+        font-size: 5rem;
+    }
+
+    .scoreboard-title {
+        font-size: 1rem;
+        line-height: 0;
+    }
+    
+    .scoreboard-score {
+        font-size: 2rem;
+        line-height: 0;
+    }
+
+    .scoreboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        margin-top: 100px;
+    }
+}
+
+@media only screen and (min-width: 601px) {
+
+    .boardGrid {
+        height: 600px;
+        width: 600px;
+    }
+
+    button.cell {
+        font-size: 10rem;
+    }
+
+    .scoreboard-title {
+        font-size: 1.3rem;
+        line-height: 0;
+    }
+    
+    .scoreboard-score {
+        font-size: 3rem;
+        line-height: 0;
+    }
+
+    .scoreboard {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        margin-top: 30px;
+    }
+}
+
+
 .container {
     width: 80%;
     display: flex;
@@ -36,30 +119,6 @@ body {
     justify-content: center;
     /* align-items: center; */
 }
-
-@media only screen and (max-width: 600px) {
-    .boardGrid {
-        height: 40vh;
-        width: 90vw;
-    }
-
-    button.cell {
-        font-size: 5rem;
-    }
-
-  }
-
-@media only screen and (min-width: 600px) {
-    .boardGrid {
-        height: 600px;
-        width: 600px;
-    }
-
-    button.cell {
-        font-size: 10rem;
-    }
-}
-
 
 .boardGrid {
     display: grid;
@@ -101,7 +160,6 @@ div.cellDiv:nth-child(6) {
 .scoreboard {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    margin-top: 30px;
 }
 
 .score {
@@ -115,18 +173,6 @@ div.cellDiv:nth-child(6) {
 
 .score.three {
     margin-right: auto;
-}
-
-
-
-.scoreboard-title {
-    font-size: 1.3rem;
-    line-height: 0;
-}
-
-.scoreboard-score {
-    font-size: 3rem;
-    line-height: 0;
 }
 
 .player-select {
